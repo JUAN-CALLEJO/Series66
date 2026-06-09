@@ -72,6 +72,28 @@ progress is saved in the browser. Accounts/sync require the backend.
 
 ---
 
+## Deploy to Render (public hosting)
+
+The repo ships a `render.yaml` blueprint — one Node web service that builds the React app
+and runs the API, with a persistent disk for the database and an auto-generated `JWT_SECRET`.
+
+1. **Push to GitHub** (one-time):
+   ```bash
+   git remote add origin https://github.com/<you>/series66.git
+   git push -u origin main
+   ```
+2. In **Render → New → Blueprint**, connect the repo. Render reads `render.yaml` and provisions:
+   - build `npm install && npm install --prefix server && npm run build`
+   - start `node server/index.js`
+   - a 1 GB disk mounted at `/var/data` (`DATA_DIR`) so accounts/results persist
+   - a generated `JWT_SECRET`
+3. Click **Apply**. You get a public `https://series66.onrender.com` URL; add a custom domain in the dashboard.
+
+> The persistent disk requires Render's **Starter** plan (~$7/mo). On the free plan, omit the
+> `disk:` block — the app still runs, but user data resets on each redeploy/sleep.
+
+---
+
 ## Production / sellability notes
 
 - **Logos**: the NASAA / FINRA / SEC marks identify the standards the content aligns to. The
