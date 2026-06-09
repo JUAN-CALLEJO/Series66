@@ -1,0 +1,28 @@
+{
+  "name": "series66-study-platform",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Interactive Series 66 (NASAA Uniform Combined State Law) study platform",
+  "scripts": {
+    "dev": "vite --port 3000 --host",
+    "server": "node server/index.js",
+    "start": "concurrently -n web,api -c magenta,cyan \"npm run dev\" \"npm run server\"",
+    "build": "vite build",
+    "serve": "node server/index.js",
+    "preview": "vite preview --port 4173"
+  },
+  "dependencies": {
+    "framer-motion": "^11.3.19",
+    "lucide-react": "^0.427.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.12.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^10.0.3",
+    "vite": "^5.4.0",
+    "vite-plugin-singlefile": "^2.3.3"
+  }
+}

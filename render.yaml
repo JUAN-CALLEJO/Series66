@@ -1,0 +1,27 @@
+# Render Blueprint — deploys the Series 66 platform as ONE web service.
+# The Express server serves the built React app AND the /api endpoints.
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: series66
+    runtime: node
+    plan: starter            # Starter ($7/mo) is required for a persistent disk.
+    region: oregon           # change to your nearest region if you like
+    # Install frontend + backend deps, then build the static app:
+    buildCommand: npm install && npm install --prefix server && npm run build
+    # Express serves dist/ + /api on the port Render assigns:
+    startCommand: node server/index.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 22.16.0
+      - key: JWT_SECRET
+        generateValue: true   # Render generates a strong secret automatically
+      - key: DATA_DIR
+        value: /var/data      # user database lives on the persistent disk below
+    # Persistent disk so accounts/results survive redeploys & restarts:
+    disk:
+      name: series66-data
+      mountPath: /var/data
+      sizeGB: 1
