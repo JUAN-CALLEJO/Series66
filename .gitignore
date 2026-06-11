@@ -6,7 +6,12 @@ server/node_modules/
 dist/
 
 # local database (user data)
-server/data/
+server/data/db.json
+
+# local dev config
+.claude/
+.vscode/
+.idea/
 
 # logs & env
 *.log
