@@ -1,7 +1,6 @@
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
-import { DIAGNOSTIC_QUIZ } from '../data/diagnosticQuiz.js';
 
 const stepVariants = {
   hidden: { opacity: 0, x: 20 },
@@ -15,51 +14,10 @@ export function OnboardingWizard({ onComplete }) {
   const [knowledgeLevel, setKnowledgeLevel] = useState('');
   const [studyTimeHours, setStudyTimeHours] = useState('');
   const [learningStyle, setLearningStyle] = useState('');
-  const [diagnosticAnswers, setDiagnosticAnswers] = useState({});
-  const [currentDiagnosticQuestion, setCurrentDiagnosticQuestion] = useState(0);
-
-  // Calculate diagnostic score
-  const diagnosticScore = useMemo(() => {
-    let correct = 0;
-    DIAGNOSTIC_QUIZ.forEach((q, i) => {
-      if (diagnosticAnswers[i] === q.correct) correct++;
-    });
-    return Math.round((correct / DIAGNOSTIC_QUIZ.length) * 100);
-  }, [diagnosticAnswers]);
-
-  // Identify weak sections (< 70% on a section)
-  const weakSections = useMemo(() => {
-    const sections = { I: { correct: 0, total: 0 }, II: { correct: 0, total: 0 }, III: { correct: 0, total: 0 }, IV: { correct: 0, total: 0 } };
-    DIAGNOSTIC_QUIZ.forEach((q, i) => {
-      sections[q.sec].total++;
-      if (diagnosticAnswers[i] === q.correct) sections[q.sec].correct++;
-    });
-    return Object.entries(sections)
-      .filter(([_, data]) => (data.correct / data.total) < 0.7)
-      .map(([sec, _]) => sec);
-  }, [diagnosticAnswers]);
-
-  const handleAnswerDiagnostic = (questionIndex, answerIndex) => {
-    setDiagnosticAnswers({ ...diagnosticAnswers, [questionIndex]: answerIndex });
-  };
-
-  const nextDiagnosticQuestion = () => {
-    if (currentDiagnosticQuestion < DIAGNOSTIC_QUIZ.length - 1) {
-      setCurrentDiagnosticQuestion(currentDiagnosticQuestion + 1);
-    } else {
-      setStep(6);
-    }
-  };
-
-  const prevDiagnosticQuestion = () => {
-    if (currentDiagnosticQuestion > 0) {
-      setCurrentDiagnosticQuestion(currentDiagnosticQuestion - 1);
-    }
-  };
 
   const handleNext = () => {
-    if (step < 5) setStep(step + 1);
-    else setStep(6);
+    if (step < 4) setStep(step + 1);
+    else setStep(5); // Review step
   };
 
   const handlePrev = () => {
@@ -72,8 +30,6 @@ export function OnboardingWizard({ onComplete }) {
       knowledgeLevel,
       studyTimeHours: parseInt(studyTimeHours),
       learningStyle,
-      diagnosticScore,
-      weakSections,
     });
   };
 
@@ -84,9 +40,9 @@ export function OnboardingWizard({ onComplete }) {
         <motion.div className="onboarding-modal" variants={stepVariants} initial="hidden" animate="show" exit="exit">
           <div className="onboarding-header">
             <h2>When's your exam date?</h2>
-            <p className="step-counter">Step 1 of 6</p>
+            <p className="step-counter">Step 1 of 5</p>
           </div>
-          <div className="onboarding-progress-bar" style={{ width: '16%' }} />
+          <div className="onboarding-progress-bar" style={{ width: '20%' }} />
           <div className="onboarding-body">
             <p className="onboarding-label">Choose your target exam date</p>
             <input
@@ -117,9 +73,9 @@ export function OnboardingWizard({ onComplete }) {
         <motion.div className="onboarding-modal" variants={stepVariants} initial="hidden" animate="show" exit="exit">
           <div className="onboarding-header">
             <h2>What's your current level?</h2>
-            <p className="step-counter">Step 2 of 6</p>
+            <p className="step-counter">Step 2 of 5</p>
           </div>
-          <div className="onboarding-progress-bar" style={{ width: '32%' }} />
+          <div className="onboarding-progress-bar" style={{ width: '40%' }} />
           <div className="onboarding-body">
             {['Beginner', 'Intermediate', 'Advanced'].map((level) => (
               <label key={level} className={`onboarding-radio ${knowledgeLevel === level ? 'checked' : ''}`}>
@@ -154,9 +110,9 @@ export function OnboardingWizard({ onComplete }) {
         <motion.div className="onboarding-modal" variants={stepVariants} initial="hidden" animate="show" exit="exit">
           <div className="onboarding-header">
             <h2>How much can you study daily?</h2>
-            <p className="step-counter">Step 3 of 6</p>
+            <p className="step-counter">Step 3 of 5</p>
           </div>
-          <div className="onboarding-progress-bar" style={{ width: '48%' }} />
+          <div className="onboarding-progress-bar" style={{ width: '60%' }} />
           <div className="onboarding-body">
             {['1', '2', '3'].map((hours) => (
               <label key={hours} className={`onboarding-radio ${studyTimeHours === hours ? 'checked' : ''}`}>
@@ -191,9 +147,9 @@ export function OnboardingWizard({ onComplete }) {
         <motion.div className="onboarding-modal" variants={stepVariants} initial="hidden" animate="show" exit="exit">
           <div className="onboarding-header">
             <h2>How do you learn best?</h2>
-            <p className="step-counter">Step 4 of 6</p>
+            <p className="step-counter">Step 4 of 5</p>
           </div>
-          <div className="onboarding-progress-bar" style={{ width: '64%' }} />
+          <div className="onboarding-progress-bar" style={{ width: '80%' }} />
           <div className="onboarding-body">
             {['Visual', 'Text-heavy', 'Hands-on', 'Mixed'].map((style) => (
               <label key={style} className={`onboarding-radio ${learningStyle === style ? 'checked' : ''}`}>
@@ -221,56 +177,14 @@ export function OnboardingWizard({ onComplete }) {
     );
   }
 
-  // Step 5: Diagnostic Quiz
+  // Step 5: Review & Confirm
   if (step === 5) {
-    const q = DIAGNOSTIC_QUIZ[currentDiagnosticQuestion];
-    const isAnswered = diagnosticAnswers[currentDiagnosticQuestion] !== undefined;
     return (
       <div className="onboarding-scrim">
         <motion.div className="onboarding-modal" variants={stepVariants} initial="hidden" animate="show" exit="exit">
           <div className="onboarding-header">
-            <h2>Quick assessment</h2>
-            <p className="step-counter">Question {currentDiagnosticQuestion + 1} of {DIAGNOSTIC_QUIZ.length}</p>
-          </div>
-          <div className="onboarding-progress-bar" style={{ width: `${((currentDiagnosticQuestion + 1) / DIAGNOSTIC_QUIZ.length) * 100}%` }} />
-          <div className="onboarding-body">
-            <p className="onboarding-question">{q.q}</p>
-            <div className="onboarding-options">
-              {q.opts.map((opt, i) => (
-                <label key={i} className={`onboarding-option ${diagnosticAnswers[currentDiagnosticQuestion] === i ? 'selected' : ''}`}>
-                  <input
-                    type="radio"
-                    name={`q${currentDiagnosticQuestion}`}
-                    value={i}
-                    checked={diagnosticAnswers[currentDiagnosticQuestion] === i}
-                    onChange={() => handleAnswerDiagnostic(currentDiagnosticQuestion, i)}
-                  />
-                  <span>{opt}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-          <div className="onboarding-footer">
-            <button className="btn ghost" onClick={prevDiagnosticQuestion} disabled={currentDiagnosticQuestion === 0}>
-              <ChevronLeft size={16} /> Back
-            </button>
-            <button className="btn" onClick={nextDiagnosticQuestion} disabled={!isAnswered}>
-              {currentDiagnosticQuestion === DIAGNOSTIC_QUIZ.length - 1 ? 'Review' : 'Next'} <ChevronRight size={16} />
-            </button>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
-  // Step 6: Review & Confirm
-  if (step === 6) {
-    return (
-      <div className="onboarding-scrim">
-        <motion.div className="onboarding-modal" variants={stepVariants} initial="hidden" animate="show" exit="exit">
-          <div className="onboarding-header">
-            <h2>Your study plan</h2>
-            <p className="step-counter">Step 6 of 6</p>
+            <h2>Ready to begin?</h2>
+            <p className="step-counter">Step 5 of 5</p>
           </div>
           <div className="onboarding-progress-bar" style={{ width: '100%' }} />
           <div className="onboarding-body">
@@ -291,21 +205,9 @@ export function OnboardingWizard({ onComplete }) {
                 <span>Learning style:</span>
                 <strong>{learningStyle}</strong>
               </div>
-              <div className="review-row">
-                <span>Diagnostic score:</span>
-                <strong style={{ color: diagnosticScore >= 70 ? 'var(--green)' : diagnosticScore >= 60 ? 'var(--yellow)' : 'var(--red)' }}>
-                  {diagnosticScore}%
-                </strong>
-              </div>
-              {weakSections.length > 0 && (
-                <div className="review-row">
-                  <span>Focus areas:</span>
-                  <strong>Section{weakSections.length > 1 ? 's' : ''} {weakSections.join(', ')}</strong>
-                </div>
-              )}
             </div>
             <p style={{ marginTop: 18, fontSize: 13, color: 'var(--text-3)', textAlign: 'center' }}>
-              We'll create a personalized daily schedule based on your exam date and available study time.
+              We'll create a personalized daily schedule tailored to your exam date and available study time.
             </p>
           </div>
           <div className="onboarding-footer">

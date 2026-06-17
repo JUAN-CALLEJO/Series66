@@ -10,7 +10,6 @@ import {
   findUserByEmail, getUser, createUser, publicUser,
   getProgress, saveProgress, addResult, getResults, saveOnboarding,
 } from './db.js';
-import { DIAGNOSTIC_QUIZ } from '../src/data/diagnosticQuiz.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 4000;
@@ -67,16 +66,12 @@ app.post('/api/auth/login', (req, res) => {
 app.get('/api/auth/me', auth, (req, res) => res.json({ user: publicUser(req.user) }));
 
 // ---------- onboarding ----------
-app.get('/api/onboarding/diagnostic', (_req, res) => {
-  res.json({ questions: DIAGNOSTIC_QUIZ });
-});
-
 app.post('/api/onboarding/complete', auth, (req, res) => {
-  const { examDate, knowledgeLevel, studyTimeHours, learningStyle, diagnosticScore, weakSections } = req.body || {};
-  if (!examDate || !knowledgeLevel || !studyTimeHours || !learningStyle || typeof diagnosticScore !== 'number')
+  const { examDate, knowledgeLevel, studyTimeHours, learningStyle } = req.body || {};
+  if (!examDate || !knowledgeLevel || !studyTimeHours || !learningStyle)
     return res.status(400).json({ error: 'Missing onboarding data.' });
 
-  const onboardingData = { examDate, knowledgeLevel, studyTimeHours, learningStyle, diagnosticScore, weakSections };
+  const onboardingData = { examDate, knowledgeLevel, studyTimeHours, learningStyle };
   const user = saveOnboarding(req.user.id, onboardingData);
   res.json({ user, onboardingData });
 });
