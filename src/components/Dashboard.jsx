@@ -19,14 +19,8 @@ export function Dashboard({ sections, go, visited }) {
             NASAA · Effective June 2023 specs
           </span>
           <h1 style={{ marginTop: 10 }}>
-            Master the <span>Series 66</span> exam
+            <span>Series 66</span>
           </h1>
-          <p>
-            The Uniform Combined State Law Examination qualifies you as a dually-registered
-            broker-dealer agent and investment adviser representative. This platform is built
-            directly on the official NASAA test specifications — four weighted subject areas,
-            comprehensive content, flashcards, practice tests, and a 3-week study plan.
-          </p>
           <div className="facts">
             {QUICK_FACTS.map((f) => (
               <div className="fact" key={f.l}>

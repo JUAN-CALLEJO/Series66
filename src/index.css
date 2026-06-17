@@ -67,7 +67,7 @@ button { font-family: inherit; }
 
 /* ============================ SIDEBAR ============================ */
 .sidebar {
-  width: var(--sidebar-w); flex-shrink: 0; background: rgba(15,18,26,0.85);
+  width: var(--sidebar-w); flex-shrink: 0; background: rgba(25,28,40,0.95);
   backdrop-filter: blur(12px); border-right: 1px solid var(--border);
   display: flex; flex-direction: column; overflow: hidden;
 }
