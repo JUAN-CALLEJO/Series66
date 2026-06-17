@@ -11,10 +11,12 @@ import { StudyPlan } from './components/StudyPlan.jsx';
 import { MockExams } from './components/MockExams.jsx';
 import { ProgressDashboard } from './components/ProgressDashboard.jsx';
 import { AuthModal } from './components/Auth.jsx';
+import { OnboardingWizard } from './components/OnboardingWizard.jsx';
 import { useApp } from './context/AppData.jsx';
 
 export default function App() {
-  const { visited, missed, plan, setPlan, recordResult } = useApp();
+  const { visited, missed, plan, setPlan, recordResult, user } = useApp();
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const [view, setView] = useState('dashboard');
   const [activeTopicId, setActiveTopicId] = useState(null);
@@ -88,6 +90,27 @@ export default function App() {
     (payload) => recordResult({ kind: 'quiz', label: payload.label || 'Practice quiz', ...payload }),
     [recordResult]
   );
+
+  // Show onboarding if user is logged in but hasn't completed it
+  if (user && !user.onboardingCompleted && !showOnboarding) {
+    return <OnboardingWizard onComplete={async (responses) => {
+      try {
+        const token = localStorage.getItem('s66.token');
+        const res = await fetch('/api/onboarding/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify(responses),
+        });
+        if (res.ok) {
+          setShowOnboarding(true);
+          // Refresh user state in AppData
+          window.location.reload();
+        }
+      } catch (err) {
+        console.error('Onboarding error:', err);
+      }
+    }} />;
+  }
 
   return (
     <div className="app">

@@ -45,6 +45,9 @@ export function createUser({ email, name, passwordHash }) {
     name: name || email.split('@')[0],
     passwordHash,
     createdAt: new Date().toISOString(),
+    onboardingCompleted: false,
+    onboardingData: null,
+    weakSections: [],
   };
   cache.users.push(user);
   persist();
@@ -95,4 +98,15 @@ export function getResults(userId) {
   return cache.results
     .filter((r) => r.userId === userId)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
+// ---------- Onboarding ----------
+export function saveOnboarding(userId, onboardingData) {
+  const user = cache.users.find((u) => u.id === userId);
+  if (!user) return null;
+  user.onboardingCompleted = true;
+  user.onboardingData = onboardingData;
+  user.weakSections = onboardingData.weakSections || [];
+  persist();
+  return publicUser(user);
 }

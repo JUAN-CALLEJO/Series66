@@ -438,3 +438,65 @@ button { font-family: inherit; }
   .hero-left h1 { font-size: 25px; }
   .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 40; }
 }
+
+/* ============================ ONBOARDING WIZARD ============================ */
+.onboarding-scrim {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 100;
+  display: grid; place-items: center; padding: 20px;
+}
+.onboarding-modal {
+  background: var(--surface-1); border-radius: var(--radius); border: 1px solid var(--border);
+  width: 100%; max-width: 500px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; max-height: 90vh; overflow: hidden;
+}
+.onboarding-header {
+  padding: 28px 28px 0; border-bottom: 1px solid var(--border-soft);
+}
+.onboarding-header h2 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+.step-counter { font-size: 12px; color: var(--text-3); }
+.onboarding-progress-bar {
+  height: 3px; background: var(--primary); margin-top: 20px; transition: width 0.3s;
+}
+.onboarding-body {
+  flex: 1; padding: 28px; overflow-y: auto;
+}
+.onboarding-label { display: block; font-size: 14px; color: var(--text-2); margin-bottom: 16px; }
+.onboarding-input {
+  width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface-2); color: var(--text); font-size: 16px;
+}
+.onboarding-radio {
+  display: flex; align-items: center; padding: 12px 14px; margin-bottom: 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer;
+  transition: all 0.2s;
+}
+.onboarding-radio input { display: none; }
+.onboarding-radio.checked {
+  background: var(--primary-soft); border-color: var(--primary);
+}
+.radio-label { margin-left: 10px; flex: 1; cursor: pointer; }
+.onboarding-question { font-size: 16px; font-weight: 500; margin-bottom: 20px; line-height: 1.5; }
+.onboarding-options { display: flex; flex-direction: column; gap: 10px; }
+.onboarding-option {
+  display: flex; align-items: center; padding: 12px 14px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer;
+  transition: all 0.2s; background: var(--surface-2);
+}
+.onboarding-option input { display: none; }
+.onboarding-option.selected {
+  background: var(--primary-soft); border-color: var(--primary);
+}
+.onboarding-option span { margin-left: 10px; flex: 1; }
+.review-summary { display: flex; flex-direction: column; gap: 14px; }
+.review-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px; background: var(--surface-2); border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+.review-row span { color: var(--text-3); }
+.review-row strong { color: var(--text); }
+.onboarding-footer {
+  display: flex; gap: 10px; padding: 20px 28px; border-top: 1px solid var(--border-soft);
+}
+.onboarding-footer button { flex: 1; }
+}
