@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite --port 3000 --host",
     "server": "node server/index.js",
-    "start": "concurrently -n web,api -c magenta,cyan \"npm run dev\" \"npm run server\"",
+    "start": "npm --prefix server install && node server/index.js",
     "build": "vite build",
     "serve": "node server/index.js",
     "preview": "vite preview --port 4173"
