@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, CalendarDays, FileQuestion, BookOpen } from 'lucide-react';
 import { WeightingChart } from './WeightingChart.jsx';
 import { TrustStrip } from './Logos.jsx';
+import { ReadinessCard } from './ReadinessCard.jsx';
 import { EXAM_FACTS, QUICK_FACTS } from '../data/examFacts.js';
 
 const fade = {
@@ -9,7 +10,7 @@ const fade = {
   show: (i = 0) => ({ opacity: 1, y: 0, transition: { delay: i * 0.05, duration: 0.35 } }),
 };
 
-export function Dashboard({ sections, go, visited }) {
+export function Dashboard({ sections, go, visited, results, user }) {
   return (
     <div>
       {/* HERO */}
@@ -105,6 +106,13 @@ export function Dashboard({ sections, go, visited }) {
           );
         })}
       </div>
+
+      {/* READINESS CARD */}
+      {user?.onboardingCompleted && (
+        <motion.div style={{ marginTop: 20 }} variants={fade} initial="hidden" animate="show">
+          <ReadinessCard results={results || []} onboardingData={user?.onboardingData} />
+        </motion.div>
+      )}
 
       {/* TRUST STRIP */}
       <div style={{ marginTop: 22 }}>

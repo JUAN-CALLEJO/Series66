@@ -17,7 +17,7 @@ import { useApp } from './context/AppData.jsx';
 import { generateStudyPlan } from './lib/planGenerator.js';
 
 export default function App() {
-  const { visited, missed, plan, setPlan, recordResult, user } = useApp();
+  const { visited, missed, plan, setPlan, recordResult, user, results } = useApp();
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   const [view, setView] = useState('dashboard');
@@ -158,7 +158,7 @@ export default function App() {
 
         <div className="content-scroll">
           <div className="content-pad fade-in" key={`${view}-${activeTopicId}-${quizSeed}-${flashScope}`}>
-            {view === 'dashboard' && <Dashboard sections={SECTIONS} go={go} visited={visited} />}
+            {view === 'dashboard' && <Dashboard sections={SECTIONS} go={go} visited={visited} results={results} user={user} />}
             {view === 'plan' && (
               generatedPlan && user?.onboardingCompleted ? (
                 <PersonalizedStudyPlan plan={generatedPlan} onboardingData={user.onboardingData} go={go} />

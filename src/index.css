@@ -32,8 +32,14 @@
 
   /* Status */
   --green: #2bd9a8;
-  --red: #ff6b7d;
   --yellow: #ffd166;
+  --orange: #ff9f5a;
+  --red: #ff6b7d;
+
+  /* Status backgrounds */
+  --success-soft: rgba(43, 217, 168, 0.12);
+  --warning-soft: rgba(255, 209, 102, 0.12);
+  --danger-soft: rgba(255, 107, 125, 0.12);
 
   --radius: 14px;
   --radius-sm: 9px;

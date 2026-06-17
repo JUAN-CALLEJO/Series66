@@ -140,6 +140,49 @@ app.post('/api/results', auth, async (req, res) => {
   res.json(result);
 });
 
+// ---------- readiness ----------
+app.get('/api/progress/readiness', auth, async (req, res) => {
+  const results = await getResults(req.user.id);
+  const user = await getUser(req.user.id);
+
+  // Calculate weighted readiness score from last 5 quizzes
+  const recent = results.slice(0, 5);
+  if (recent.length === 0) {
+    return res.json({ score: 0, forecast: 'no_data', message: 'Take a quiz to see your readiness' });
+  }
+
+  const weights = [0.35, 0.25, 0.20, 0.12, 0.08];
+  let weightedSum = 0;
+  let weightSum = 0;
+
+  for (let i = 0; i < recent.length; i++) {
+    const pct = recent[i].pct || 0;
+    const weight = weights[i] || 0;
+    weightedSum += pct * weight;
+    weightSum += weight;
+  }
+
+  const readinessScore = Math.round(weightedSum / weightSum);
+
+  // Determine forecast
+  let forecast = 'at_risk';
+  if (readinessScore >= 73) forecast = 'likely_pass';
+  else if (readinessScore >= 65) forecast = 'on_track';
+  else if (readinessScore >= 55) forecast = 'needs_improvement';
+
+  // Days remaining
+  const examDate = user?.onboardingData?.examDate ? new Date(user.onboardingData.examDate) : null;
+  const daysRemaining = examDate ? Math.floor((examDate - new Date()) / (1000 * 60 * 60 * 24)) : 0;
+
+  res.json({
+    score: readinessScore,
+    forecast,
+    daysRemaining,
+    totalQuizzes: results.length,
+    lastQuizDate: recent[0]?.created_at || null,
+  });
+});
+
 // ---------- serve built frontend (production) ----------
 const distDir = join(__dirname, '..', 'dist');
 if (existsSync(distDir)) {
