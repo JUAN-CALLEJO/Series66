@@ -10,6 +10,7 @@ import {
   findUserByEmail, getUser, createUser, publicUser,
   getProgress, saveProgress, addResult, getResults, saveOnboarding,
 } from './db.js';
+import { generateStudyPlan } from '../src/lib/planGenerator.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 4000;
@@ -73,7 +74,9 @@ app.post('/api/onboarding/complete', auth, (req, res) => {
 
   const onboardingData = { examDate, knowledgeLevel, studyTimeHours, learningStyle };
   const user = saveOnboarding(req.user.id, onboardingData);
-  res.json({ user, onboardingData });
+  const plan = generateStudyPlan(onboardingData);
+
+  res.json({ user, onboardingData, plan });
 });
 
 // ---------- progress ----------

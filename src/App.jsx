@@ -8,11 +8,13 @@ import { Flashcards } from './components/Flashcards.jsx';
 import { Quiz } from './components/Quiz.jsx';
 import { MissedReview } from './components/MissedReview.jsx';
 import { StudyPlan } from './components/StudyPlan.jsx';
+import { PersonalizedStudyPlan } from './components/PersonalizedStudyPlan.jsx';
 import { MockExams } from './components/MockExams.jsx';
 import { ProgressDashboard } from './components/ProgressDashboard.jsx';
 import { AuthModal } from './components/Auth.jsx';
 import { OnboardingWizard } from './components/OnboardingWizard.jsx';
 import { useApp } from './context/AppData.jsx';
+import { generateStudyPlan } from './lib/planGenerator.js';
 
 export default function App() {
   const { visited, missed, plan, setPlan, recordResult, user } = useApp();
@@ -30,6 +32,14 @@ export default function App() {
   const activeTopic = useMemo(() => ALL_TOPICS.find((t) => t.id === activeTopicId) || null, [activeTopicId]);
   const activeSection = useMemo(() => SECTIONS.find((s) => s.id === activeTopic?.sectionId) || null, [activeTopic]);
   const progressPct = Math.round((visited.size / TOTAL_TOPICS) * 100);
+
+  // Generate personalized study plan from onboarding data
+  const generatedPlan = useMemo(() => {
+    if (user?.onboardingData) {
+      return generateStudyPlan(user.onboardingData);
+    }
+    return null;
+  }, [user?.onboardingData]);
 
   const go = useCallback(
     (target) => {
@@ -149,7 +159,13 @@ export default function App() {
         <div className="content-scroll">
           <div className="content-pad fade-in" key={`${view}-${activeTopicId}-${quizSeed}-${flashScope}`}>
             {view === 'dashboard' && <Dashboard sections={SECTIONS} go={go} visited={visited} />}
-            {view === 'plan' && <StudyPlan checks={plan} setChecks={setPlan} go={go} />}
+            {view === 'plan' && (
+              generatedPlan && user?.onboardingCompleted ? (
+                <PersonalizedStudyPlan plan={generatedPlan} onboardingData={user.onboardingData} go={go} />
+              ) : (
+                <StudyPlan checks={plan} setChecks={setPlan} go={go} />
+              )
+            )}
             {view === 'mocks' && <MockExams />}
             {view === 'progress' && <ProgressDashboard go={go} />}
 
